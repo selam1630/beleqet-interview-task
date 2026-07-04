@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  Briefcase,
   Laptop,
   Megaphone,
   Landmark,
@@ -9,9 +10,10 @@ import {
   MoreHorizontal,
   type LucideIcon,
 } from "lucide-react";
-import { categories } from "@/lib/mockData";
+import { getCategories } from "@/lib/api";
 
 const iconMap: Record<string, LucideIcon> = {
+  briefcase: Briefcase,
   laptop: Laptop,
   megaphone: Megaphone,
   landmark: Landmark,
@@ -21,7 +23,9 @@ const iconMap: Record<string, LucideIcon> = {
   "more-horizontal": MoreHorizontal,
 };
 
-export default function CategoryGrid() {
+export default async function CategoryGrid() {
+  const categories = await getCategories();
+
   return (
     <section className="container-page py-14">
       <div className="flex items-end justify-between mb-6">

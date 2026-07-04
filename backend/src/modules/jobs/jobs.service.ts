@@ -22,6 +22,7 @@ export class JobsService {
 
   async getCategories() {
     return this.prisma.jobCategory.findMany({
+      include: { _count: { select: { jobs: true } } },
       orderBy: { label: 'asc' },
     });
   }

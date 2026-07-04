@@ -17,8 +17,17 @@ async function bootstrap() {
 
   // ── Security ──────────────────────────────────────────────────────────────
   app.use(helmet());
+  const frontendUrls = configService
+    .get<string>('FRONTEND_URL', 'http://localhost:3000')
+    .split(',')
+    .map((url) => url.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: configService.get<string>('FRONTEND_URL', 'http://localhost:3000'),
+    origin: (origin, callback) => {
+      if (!origin || frontendUrls.includes(origin)) return callback(null, true);
+      return callback(null, false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   });

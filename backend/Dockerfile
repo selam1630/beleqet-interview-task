@@ -12,7 +12,7 @@ RUN npm config set fetch-retries 5 \
   && npm config set fetch-retry-mintimeout 20000 \
   && npm config set fetch-retry-maxtimeout 120000 \
   && npm config set fetch-timeout 600000 \
-  && npm ci --no-audit --no-fund
+  && (npm ci --no-audit --no-fund || npm ci --no-audit --no-fund || npm ci --no-audit --no-fund)
 
 COPY . .
 
@@ -33,4 +33,4 @@ COPY --from=builder /app/prisma ./prisma
 
 EXPOSE 4000
 
-CMD sh -c "npx prisma db push --accept-data-loss && npm run start:prod"
+CMD sh -c "npx prisma db push --accept-data-loss && npm run prisma:seed && npm run start:prod"

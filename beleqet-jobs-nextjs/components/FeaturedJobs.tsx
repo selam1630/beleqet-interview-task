@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { jobs } from "@/lib/mockData";
 import JobCard from "./JobCard";
+import { getFeaturedJobs } from "@/lib/api";
 
-export default function FeaturedJobs() {
-  const featured = jobs.filter((j) => j.featured);
+export default async function FeaturedJobs() {
+  const featured = await getFeaturedJobs();
 
   return (
     <section className="bg-white border-y border-border">
@@ -18,11 +18,17 @@ export default function FeaturedJobs() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {featured.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))}
-        </div>
+        {featured.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-border bg-pageBg p-8 text-center text-sm text-muted">
+            No featured jobs available yet.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {featured.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

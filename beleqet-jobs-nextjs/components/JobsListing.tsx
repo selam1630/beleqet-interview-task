@@ -3,12 +3,13 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, MapPin, SlidersHorizontal } from "lucide-react";
-import { jobs, categories } from "@/lib/mockData";
+import type { Category } from "@/lib/api";
+import type { Job } from "@/lib/mockData";
 import JobCard from "@/components/JobCard";
 
 const jobTypes = ["Full Time", "Part Time", "Remote", "Hybrid", "On-site", "Contract"];
 
-export default function JobsListing() {
+export default function JobsListing({ jobs, categories }: { jobs: Job[]; categories: Category[] }) {
   const searchParams = useSearchParams();
 
   const [query, setQuery] = useState(searchParams.get("q") ?? "");

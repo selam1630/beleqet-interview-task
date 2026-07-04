@@ -1,17 +1,16 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MapPin, Clock, Building2, ArrowLeft } from "lucide-react";
-import { jobs } from "@/lib/mockData";
+import { getJob, getJobs } from "@/lib/api";
 
-export function generateStaticParams() {
-  return jobs.map((job) => ({ id: job.id }));
-}
+export const dynamic = "force-dynamic";
 
-export default function JobDetailPage({ params }: { params: { id: string } }) {
-  const job = jobs.find((j) => j.id === params.id);
+export default async function JobDetailPage({ params }: { params: { id: string } }) {
+  const job = await getJob(params.id);
   if (!job) notFound();
 
-  const related = jobs.filter((j) => j.category === job.category && j.id !== job.id).slice(0, 3);
+  const jobs = await getJobs({ category: job.category, limit: 4 });
+  const related = jobs.filter((j) => j.id !== job.id).slice(0, 3);
 
   return (
     <div className="container-page py-10">

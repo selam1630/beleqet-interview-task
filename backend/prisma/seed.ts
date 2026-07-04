@@ -40,6 +40,134 @@ async function main() {
   );
   console.log('✅ Job categories created');
 
+  // ── Demo employer + jobs ───────────────────────────────────────────────────
+  const passwordHash = await bcrypt.hash('SecurePass123!', 12);
+  const employer = await prisma.user.upsert({
+    where: { email: 'demo.employer@beleqet.com' },
+    update: {},
+    create: {
+      email: 'demo.employer@beleqet.com',
+      passwordHash,
+      firstName: 'Demo',
+      lastName: 'Employer',
+      role: 'EMPLOYER',
+      emailVerified: true,
+    },
+  });
+
+  const company = await prisma.company.upsert({
+    where: { userId: employer.id },
+    update: {
+      name: 'Beleqet Talent Partners',
+      verified: true,
+    },
+    create: {
+      userId: employer.id,
+      name: 'Beleqet Talent Partners',
+      description: 'A verified employer account used to showcase live job listings.',
+      industry: 'Human Resource And Talent Management',
+      location: 'Addis Ababa, Ethiopia',
+      verified: true,
+    },
+  });
+
+  const categoryBySlug = new Map(categories.map((category) => [category.slug, category]));
+  const demoJobs = [
+    {
+      title: 'Full Stack Developer',
+      description:
+        'Build and maintain modern hiring platform features across a Next.js frontend and NestJS backend. You will work with PostgreSQL, Redis queues, and API integrations.',
+      location: 'Addis Ababa, Ethiopia',
+      type: 'FULL_TIME',
+      categorySlug: 'software-design-and-development',
+      featured: true,
+      tags: ['React', 'Next.js', 'NestJS', 'PostgreSQL'],
+      salaryMin: 30000,
+      salaryMax: 50000,
+    },
+    {
+      title: 'Digital Marketing Specialist',
+      description:
+        'Plan campaigns, manage social channels, and improve job seeker acquisition through data-driven marketing.',
+      location: 'Addis Ababa, Ethiopia',
+      type: 'HYBRID',
+      categorySlug: 'marketing-and-advertisement',
+      featured: true,
+      tags: ['SEO', 'Content', 'Analytics'],
+      salaryMin: 18000,
+      salaryMax: 30000,
+    },
+    {
+      title: 'Customer Support Officer',
+      description:
+        'Support employers and candidates, resolve account issues, and maintain a high-quality user experience.',
+      location: 'Addis Ababa, Ethiopia',
+      type: 'FULL_TIME',
+      categorySlug: 'customer-service-and-care',
+      featured: true,
+      tags: ['Customer Care', 'Communication'],
+      salaryMin: 12000,
+      salaryMax: 20000,
+    },
+    {
+      title: 'Remote UI/UX Designer',
+      description:
+        'Design clean job search and employer dashboard experiences. Portfolio with web or mobile product examples required.',
+      location: 'Remote',
+      type: 'REMOTE',
+      categorySlug: 'creative-art-and-design',
+      featured: true,
+      tags: ['Figma', 'Product Design', 'Research'],
+      salaryMin: 25000,
+      salaryMax: 45000,
+    },
+    {
+      title: 'Senior Accountant',
+      description:
+        'Own monthly reporting, general ledger review, and finance operations for a growing service company.',
+      location: 'Addis Ababa, Ethiopia',
+      type: 'FULL_TIME',
+      categorySlug: 'accounting-and-finance',
+      featured: false,
+      tags: ['Accounting', 'Finance', 'Reporting'],
+      salaryMin: 22000,
+      salaryMax: 35000,
+    },
+  ];
+
+  for (const demoJob of demoJobs) {
+    const category = categoryBySlug.get(demoJob.categorySlug) ?? categories[0];
+    const existing = await prisma.job.findFirst({
+      where: { title: demoJob.title, companyId: company.id },
+      select: { id: true },
+    });
+
+    const data = {
+      title: demoJob.title,
+      description: demoJob.description,
+      location: demoJob.location,
+      type: demoJob.type as never,
+      status: 'PUBLISHED' as never,
+      featured: demoJob.featured,
+      tags: demoJob.tags,
+      salaryMin: demoJob.salaryMin,
+      salaryMax: demoJob.salaryMax,
+      categoryId: category.id,
+      companyId: company.id,
+      companyName: company.name,
+      vacancies: 1,
+      currency: 'ETB',
+    };
+
+    if (existing) {
+      await prisma.job.update({ where: { id: existing.id }, data });
+    } else {
+      await prisma.job.create({ data });
+    }
+  }
+
+  console.log('✅ Demo employer and jobs created');
+
   // ── Freelance Categories ───────────────────────────────────────────────────
   await Promise.all([
     prisma.freelanceCategory.upsert({ where: { slug: 'graphic-design' },    update: {}, create: { slug: 'graphic-design',    label: 'Graphic Design',      icon: 'palette' } }),
