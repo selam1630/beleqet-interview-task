@@ -49,6 +49,7 @@ export default function PostJobPage() {
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
     setMessage("");
     setError("");
 
@@ -63,7 +64,7 @@ export default function PostJobPage() {
       return;
     }
 
-    const form = new FormData(event.currentTarget);
+    const form = new FormData(formElement);
     const companyName = String(form.get("companyName") ?? "").trim();
 
     setLoading(true);
@@ -89,7 +90,7 @@ export default function PostJobPage() {
         }),
       });
 
-      event.currentTarget.reset();
+      formElement.reset();
       setMessage("Job published successfully. It is now visible in Find Jobs.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not publish job");
