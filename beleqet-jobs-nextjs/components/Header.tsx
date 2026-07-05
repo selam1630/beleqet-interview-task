@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AuthActions from "@/components/AuthActions";
 
 const navItems = [
   { label: "Find Jobs", href: "/jobs" },
@@ -29,20 +30,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="hidden sm:inline-block text-sm font-medium text-ink hover:text-brandGreen transition-colors"
-          >
-            Login / Sign Up
-          </Link>
-          <Link
-            href="/post-job"
-            className="inline-flex items-center rounded-full bg-brandGreen px-4 py-2 text-sm font-semibold text-white hover:bg-darkGreen transition-colors"
-          >
-            Post a Job
-          </Link>
-        </div>
+        <AuthActions />
       </div>
     </header>
   );
